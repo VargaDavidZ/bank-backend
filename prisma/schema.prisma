@@ -1,0 +1,155 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+//model SuperAdmin {
+//id        String   @id @default(auto()) @map("_id") @db.ObjectId
+//name      String
+//email     String   @unique
+//password  String
+//createdAt DateTime @default(now())
+//updatedAt DateTime @updatedAt
+//}
+
+//model Admin {
+//id             String         @id @default(auto()) @map("_id") @db.ObjectId
+//name           String
+//email          String         @unique
+//password       String
+//numberOfUser       Int        @default(1)
+//Sale               Sale[]
+//Purchase           Purchase[]
+//SaleOfProduct      SaleOfProduct[]
+//PurchaseOfProduct  PurchaseOfProduct[]
+//Customers          Customer[]
+//Vendor             Vendor[]
+//User               User[]
+//profilePicture     Attachment[]
+//attachmentFilename String?
+//Expense            Expense[]
+//Payment            Payment[]
+//Products           Products[]
+//ReturnPurchase     ReturnPurchase[]
+//SaleReturn         SaleReturn[]
+//Accounts           Accounts[]
+//createdAt      DateTime       @default(now())
+//updatedAt      DateTime       @updatedAt
+//Bankaccounts   BankAccounts[] @relation(fields: [BankaccountsId], references: [id])
+//BankaccountsId String[]       @db.ObjectId
+//}
+
+// 3
+model User {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  Fristname      String
+  Lastname       String
+  Role           UserType      @default(User)
+  email          String        @unique
+  password       String
+  Expense        Expense[]     
+  expenseid      String[]      @db.ObjectId
+  Purchase       Purchase []   
+  purchaseid     String[]      @db.ObjectId
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  Accounts       BankAccount[] @relation(fields: [BankaccountsId], references: [id])
+  BankaccountsId String[]      @db.ObjectId
+  //ProductsSaled      SaleOfProduct[]
+  //ProductsPurchased  PurchaseOfProduct[]
+  //profilePicture     Attachment?         @relation(fields: [attachmentFilename], references: [filename])
+  //attachmentFilename String?             @unique
+  //Admin     Admin      @relation(fields: [adminId], references: [id])
+  //adminId   String
+  //ReturnPurchase     ReturnPurchase[]
+  //SaleReturn         SaleReturn[]
+  //Payment   Payment[]
+  //Accounts           Accounts[]
+  //Sale               Sale[]
+}
+
+enum UserType {
+  Admin
+  User
+}
+
+model Purchase {
+  id                 String      @id @default(auto()) @map("_id") @db.ObjectId
+  total              Int
+  Product            String
+  Vendor             String?
+  User               User      @relation(fields: [userId], references: [id])
+  userId             String    @db.ObjectId
+  Bankaccount        BankAccount @relation(fields: [bankaccountId], references: [id])
+  bankaccountId      String      @db.ObjectId
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  replicationammount Int         @default(1)
+  replicationmetric  String
+  replicationstart   DateTime    @default(now())
+  replicationend     DateTime    @default(now())
+  //Payment   Payment[]
+}
+
+//model Payment {
+//id            String       @id @default(auto()) @map("_id") @db.ObjectId
+//BillNo        String
+//Amount        Int
+//type          String
+//createdAt     DateTime     @default(now())
+//updatedAt     DateTime     @updatedAt
+//Bankaccount   BankAccounts @relation(fields: [bankaccountId], references: [id])
+//bankaccountId String       @db.ObjectId
+//Purchase   Purchase? @relation(fields: [PurchaseId], references: [id])
+//PurchaseId String? // relation scalar field (used in the `@relation` attribute above)
+//User       User?     @relation(fields: [userId], references: [id])
+//userId     String?
+//}
+
+model Expense {
+  id                 String      @id @default(auto()) @map("_id") @db.ObjectId
+  total              Int
+  Category           String
+  Description        String
+  User               User      @relation(fields: [userId], references: [id])
+  userId             String    @db.ObjectId
+  replicationammount Int         @default(1)
+  replicationmetric  String
+  replicationstart   DateTime    @default(now())
+  replicationend     DateTime    @default(now())
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  Bankaccount        BankAccount @relation(fields: [bankaccountId], references: [id])
+  bankaccountId      String      @db.ObjectId
+}
+
+//model Attachment {
+//  mimetype   String?
+//  filename   String    @id @map("_id") @db.ObjectId
+//  encoding   String?
+//  productsId String?
+//  User       User?
+//  Admin      Admin?    @relation(fields: [adminId], references: [id])
+//  adminId    String?
+//  createdAt  DateTime  @default(now())
+//  updatedAt  DateTime  @updatedAt
+//}
+
+model BankAccount {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  Users     User[]     @relation(fields: [userId], references: [id])
+  userId    String[]   @db.ObjectId
+  //Admin     User[]     @relation(fields: [adminid], references: [id])
+  //adminid    String[]   @db.ObjectId
+  Expense   Expense[]
+  Purchase  Purchase[]
+  //Payment   Payment[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  //Admins    Admin[]    @relation(fields: [adminId], references: [id])
+  //adminId   String[]   @db.ObjectId
+}
